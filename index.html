@@ -9,18 +9,18 @@
 
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 	<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+	<script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet-vector/dist/esri-leaflet-vector.js"></script>
 
 	<style>
-		body {
-    		padding: 0;
-    		margin: 0;
-		}
 		html, body, #map {
+			padding: 0;
+    		margin: 0;
 			height: 100%;
 			width: 100vw;
 		}
@@ -31,43 +31,99 @@
 <div id="map"></div>
 <script>
 
-	const map = L.map('map').setView([51.505, -0.09], 13);
+	const map = L.map('map', {
+		center: [30.4165, -84.1887],
+		zoom: 17
+	});
+
 	L.control.locate().addTo(map);
 
-	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
 
-	const marker = L.marker([51.5, -0.09]).addTo(map)
-		.bindPopup('<b>Hello world!</b><br />I am a popup.').openPopup();
+	const dem2020 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Leon_County_Color_DEM_with_Hillshade_MapTile_2020/MapServer"
+	});
 
-	const circle = L.circle([51.508, -0.11], {
-		color: 'red',
-		fillColor: '#f03',
-		fillOpacity: 0.5,
-		radius: 500
-	}).addTo(map).bindPopup('I am a circle.');
+	const imagery1941 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Historical_Imagery_1941_BW/MapServer"
+	});
 
-	const polygon = L.polygon([
-		[51.509, -0.08],
-		[51.503, -0.06],
-		[51.51, -0.047]
-	]).addTo(map).bindPopup('I am a polygon.');
+	const imagery1954 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Historical_Imagery_1954_BW/MapServer"
+	});
 
-	const popup = L.popup()
-		.setLatLng([51.513, -0.09])
-		.setContent('I am a standalone popup.')
-		.openOn(map);
+	const imagery1966 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Historical_Imagery_1966_BW/MapServer"
+	});
 
-	function onMapClick(e) {
-		popup
-			.setLatLng(e.latlng)
-			.setContent(`You clicked the map at ${e.latlng.toString()}`)
-			.openOn(map);
-	}
+	const imagery1973 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Historical_Imagery_1973_BW/MapServer"
+	});
 
-	map.on('click', onMapClick);
+	const imagery1983 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Historical_Imagery_1983_BW/MapServer"
+	});
+
+	const imagery1996 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Imagery_1996/MapServer"
+	});
+
+	const imagery2007 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Imagery_2007_RGB/MapServer"
+	});
+
+	const imagery2014 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Imagery_2014_RGB_Pictometry/MapServer"
+	});
+
+	const imagery2024 = L.esri.tiledMapLayer({
+		url: "https://tiles.arcgis.com/tiles/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Imagery_2024_Color_Leon_County_FL/MapServer"
+	});
+
+	
+
+	const basemaps = {
+		'OpenStreetMap': osm,
+		'2020 DEM': dem2020,
+		'2024 Aerial': imagery2024,
+		'2014 Aerial': imagery2014,
+		'2007 Aerial': imagery2007,
+		'1996 Aerial': imagery1996,
+		'1983 Aerial': imagery1983,
+		'1973 Aerial': imagery1973,
+		'1966 Aerial': imagery1966,
+		'1954 Aerial': imagery1954,
+		'1941 Aerial': imagery1941
+	};
+
+	// const polygon = L.polygon([
+	// 	[51.509, -0.08],
+	// 	[51.503, -0.06],
+	// 	[51.51, -0.047]
+	// ]).addTo(map).bindPopup('I am a polygon.');
+
+	const parcels = L.esri.featureLayer({
+		url: "https://intervector.leoncountyfl.gov/intervector/rest/services/MapServices/TLC_OverlayParcel_D_WM/MapServer/0",
+		where: "TAXID LIKE '311208%'",
+		fields: ['OBJECTID', 'Shape_Area'],
+		style: {'color': '#000000',
+				'weight': 2,
+				'fillOpacity': 0}
+	}).addTo(map);
+
+	const contours = L.esri.Vector.vectorTileLayer(
+		"https://vectortileservices.arcgis.com/ptvDyBs1KkcwzQNJ/arcgis/rest/services/Topographic_Contours_2020/VectorTileServer"
+	);
+
+	const layers = {
+		'Parcels': parcels,
+		'Contours': contours
+	};
+
+	const layerControl = L.control.layers(basemaps, layers).addTo(map);
 
 </script>
 
